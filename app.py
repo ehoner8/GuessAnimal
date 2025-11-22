@@ -274,9 +274,6 @@ class ConvolutionGame:
     # -------------------------------------------------
 
     def handle_image_click(self, event):
-        if self.image_revealed:
-            return
-
         col = event.x // CELL_SIZE
         row = event.y // CELL_SIZE
 
