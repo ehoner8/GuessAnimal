@@ -1,0 +1,116 @@
+:root{
+  --cell-size: 20px; /* purely for reference */
+}
+
+body{
+  transform: translateX(-80px) scale(0.95);
+  transform-origin: top center;
+  overflow: hidden;   /* eliminate scrollbars */
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  margin: 8px;
+  background: #fafafa;
+}
+
+#imgCanvas:focus,
+.fm-canvas:focus,
+.filter-btn:focus {
+  outline: none !important;
+}
+
+.container{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1{
+  text-align:center;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.main-row{
+  display:flex;
+  gap: 12px;
+}
+
+.left-panel{
+  width: 170px;
+  position: relative;
+  left: -25px;
+  top: 25px;
+}
+
+.center-panel{
+  flex: 1;
+  text-align:center;
+}
+
+.right-panel{
+  width: 420px;
+}
+
+.controls{
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.filter-btn{
+  display:block;
+  width: 100%;
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background:#f7f7f7;
+  cursor:pointer;
+}
+
+.filter-btn.selected{
+  background: #cce7ff;
+  border-color: #5aa3ff;
+}
+
+#imgCanvas{
+  border: 2px solid #333;
+  background: #000;
+  cursor: crosshair;
+}
+
+/* Container for all 6 feature maps: 2 rows, 3 cols */
+#feature-maps{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Individual FM card */
+.fm-card{
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 6px;
+  border-radius: 6px;
+  text-align:center;
+}
+
+/* each FM canvas */
+.fm-canvas{
+  border: 1px solid #999;
+  background: #fff;
+  display:block;
+}
+
+/* red/blue FM cells are drawn by JS directly on canvas - outlines for highlight */
+.fm-highlight{
+  outline: 3px solid yellow;
+}
+
+/* guess area */
+.guess{
+  margin-top: 10px;
+}
+#guessInput{ font-size: 14px; padding: 6px; width: 180px; }
+#guessBtn{ padding: 6px 10px; font-size: 14px; }
+#guessFeedback{ margin-top: 8px; font-size: 18px; height: 22px; }

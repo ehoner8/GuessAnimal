@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Convolution Activity — Guess the Animal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Guess the Animal!</h1>
+
+    <div class="main-row">
+      <div class="left-panel">
+        <div class="controls">
+          <h3>Select Filter</h3>
+          <div id="filter-buttons"></div>
+        </div>
+      </div>
+
+      <div class="center-panel">
+        <h4>Hidden Image (30x30)</h4>
+        <div id="image-wrapper" style="position:relative;">
+            <canvas id="imgCanvas" width="600" height="600"></canvas>
+            <img id="giraffe-image"
+                src="{{ giraffe_url }}"
+                alt="Giraffe"
+                style="display:none; width:300px; height:300px; position:absolute; top:0; left:0;">
+        </div>
+        <div class="guess">
+          <label for="guessInput">Your Guess:</label>
+          <input id="guessInput" type="text" />
+          <button id="guessBtn">Guess!</button>
+          <div id="guessFeedback"></div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <h4>Feature Maps (10x10)</h4>
+        <div id="feature-maps"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pass server-provided variables into client-side
+    const HARDCODED_MAPS = {{ maps|tojson }};
+    const GIRAFFE_URL = "{{ giraffe_url }}";
+  </script>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
