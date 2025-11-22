@@ -209,10 +209,19 @@ class ConvolutionGame:
     def select_feature(self, feature):
         self.selected_feature = feature
 
+        # Clear highlight from all feature maps
+        for canvas in self.fm_canvases.values():
+            canvas.delete("fm_patch")
+
+        # Update button colors
         for f, btn in self.filter_buttons.items():
             btn.config(bg="lightblue" if f == feature else "SystemButtonFace")
 
         self.redraw_feature_map(feature)
+
+        # If cursor is already active, re-highlight on new feature map
+        if self.cursor_row is not None:
+            self.highlight_feature_cell(self.cursor_row, self.cursor_col)
 
     # -------------------------------------------------
 
@@ -246,6 +255,8 @@ class ConvolutionGame:
         self.user_maps[f][self.cursor_row][self.cursor_col] = color
         self.redraw_feature_map(f)
         self.highlight_patch()
+        self.highlight_feature_cell(self.cursor_row, self.cursor_col)
+
 
     # -------------------------------------------------
 
