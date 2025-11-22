@@ -120,6 +120,8 @@ class ConvolutionGame:
         self.cursor_col = None
 
         self.selected_feature = FEATURES[0]
+        self.saved_positions = {f: (None, None) for f in FEATURES}
+
 
         # Key bindings
         root.bind("<Left>", self.move_left)
@@ -208,6 +210,17 @@ class ConvolutionGame:
 
     def select_feature(self, feature):
         self.selected_feature = feature
+        saved_r, saved_c = self.saved_positions[feature]
+
+        if saved_r is not None:
+            self.cursor_row, self.cursor_col = saved_r, saved_c
+            self.highlight_patch()
+            self.highlight_feature_cell(saved_r, saved_c)
+        else:
+            # If no saved position, clear highlights
+            self.cursor_row = None
+            self.cursor_col = None
+            self.img_canvas.delete("patch")
 
         # Clear highlight from all feature maps
         for canvas in self.fm_canvases.values():
@@ -276,6 +289,8 @@ class ConvolutionGame:
         self.cursor_row, self.cursor_col = fm_row, fm_col
         self.reveal_current_position()
         self.highlight_feature_cell(fm_row, fm_col)
+        self.saved_positions[self.selected_feature] = (fm_row, fm_col)
+
 
 
     # -------------------------------------------------
@@ -287,6 +302,8 @@ class ConvolutionGame:
             self.cursor_col -= 1
             self.reveal_current_position()
             self.highlight_feature_cell(self.cursor_row, self.cursor_col)
+            self.saved_positions[self.selected_feature] = (self.cursor_row, self.cursor_col)
+
 
 
     def move_right(self, event):
@@ -294,6 +311,8 @@ class ConvolutionGame:
             self.cursor_col += 1
             self.reveal_current_position()
             self.highlight_feature_cell(self.cursor_row, self.cursor_col)
+            self.saved_positions[self.selected_feature] = (self.cursor_row, self.cursor_col)
+
 
 
     def move_up(self, event):
@@ -301,6 +320,8 @@ class ConvolutionGame:
             self.cursor_row -= 1
             self.reveal_current_position()
             self.highlight_feature_cell(self.cursor_row, self.cursor_col)
+            self.saved_positions[self.selected_feature] = (self.cursor_row, self.cursor_col)
+
 
 
     def move_down(self, event):
@@ -308,6 +329,8 @@ class ConvolutionGame:
             self.cursor_row += 1
             self.reveal_current_position()
             self.highlight_feature_cell(self.cursor_row, self.cursor_col)
+            self.saved_positions[self.selected_feature] = (self.cursor_row, self.cursor_col)
+
 
 
     # -------------------------------------------------
