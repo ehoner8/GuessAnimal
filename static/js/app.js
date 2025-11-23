@@ -9,10 +9,13 @@ const FM_SIZE = IMG_SIZE / STRIDE; // 10
 const CELL_SIZE = 20;              // visual size in CSS; canvas uses pixels (we'll scale)
 const SCALE = CELL_SIZE;           // one logical cell equals CELL_SIZE px
 
-// features order (match server)
-const FEATURES = Object.keys(HARDCODED_MAPS);
 
 // Client-side data structures
+let CURRENT_ANIMAL = "animal1";
+let CORRECT_WORD = ANIMALS[CURRENT_ANIMAL].name;
+let GIRAFFE_URL = ANIMALS[CURRENT_ANIMAL].image;
+let HARDCODED_MAPS = ANIMALS[CURRENT_ANIMAL].filters;
+const FEATURES = Object.keys(HARDCODED_MAPS);
 const userMaps = {};
 const savedPositions = {}; // per-feature saved cursor positions: { feature: [r,c] }
 let selectedFeature = FEATURES[0];
@@ -25,6 +28,33 @@ let imgCanvas, imgCtx;
 for (const f of FEATURES) {
   userMaps[f] = Array.from({length: FM_SIZE}, () => Array(FM_SIZE).fill(null));
   savedPositions[f] = [null, null];
+}
+
+function switchAnimal(key) {
+  CURRENT_ANIMAL = key;
+
+  // update globals
+  CORRECT_WORD = ANIMALS[key].name;
+  GIRAFFE_URL = ANIMALS[key].image;
+  HARDCODED_MAPS = ANIMALS[key].filters;
+
+  // reset state
+  imageRevealed = false;
+  giraffeImage = null;
+
+  for (const f of Object.keys(userMaps)) {
+    for (let r = 0; r < FM_SIZE; r++)
+      for (let c = 0; c < FM_SIZE; c++)
+        userMaps[f][r][c] = null;
+    savedPositions[f] = [null, null];
+  }
+
+  cursorRow = cursorCol = null;
+
+  drawMainGrid();
+  makeFeatureButtons();   // if different filters per animal
+  drawAllFeatureMaps();
+  updateHighlights();
 }
 
 // --- UI build ---
@@ -257,7 +287,7 @@ function onGuess() {
   const input = document.getElementById('guessInput');
   const feedback = document.getElementById('guessFeedback');
   const val = (input.value || '').trim().toLowerCase();
-  if (val === 'giraffe') {
+  if (val === CORRECT_WORD.toLowerCase()) {
     feedback.textContent = 'Correct!';
     feedback.style.color = 'green';
     revealImage();
@@ -302,4 +332,10 @@ function init() {
   document.getElementById('guessBtn').addEventListener('click', onGuess);
 }
 
-window.addEventListener('load', init);
+window.addEventListener("load", () => {
+  init();
+
+  document.querySelectorAll(".animal-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchAnimal(btn.dataset.key));
+  });
+});

@@ -9,6 +9,10 @@
 <body>
   <div class="container">
     <h1>Guess the Animal!</h1>
+    <div id="animal-select">
+    <button class="animal-btn" data-key="animal1">Animal 1</button>
+    <button class="animal-btn" data-key="animal2">Animal 2</button>
+    </div>
 
     <div class="main-row">
       <div class="left-panel">
@@ -22,9 +26,9 @@
         <h4>Hidden Image (30x30)</h4>
         <div id="image-wrapper" style="position:relative;">
             <canvas id="imgCanvas" width="600" height="600"></canvas>
-            <img id="giraffe-image"
-                src="{{ giraffe_url }}"
-                alt="Giraffe"
+            <img id="animal-image"
+                src=""
+                alt="Animal image"
                 style="display:none; width:300px; height:300px; position:absolute; top:0; left:0;">
         </div>
         <div class="guess">
@@ -43,9 +47,7 @@
   </div>
 
   <script>
-    // Pass server-provided variables into client-side
-    const HARDCODED_MAPS = {{ maps|tojson }};
-    const GIRAFFE_URL = "{{ giraffe_url }}";
+    const ANIMALS = {{ animal_data|safe }};
   </script>
 
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
