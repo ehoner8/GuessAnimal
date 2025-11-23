@@ -48,7 +48,7 @@ function saveCurrentFeatureMaps() {
 function restoreFeatureMaps(animalKey) {
     const saved = FEATURE_MAP_STATE[animalKey];
 
-    if (!saved) {
+    if (!saved || Object.keys(saved).length === 0) {
         // First time visiting this animal → make fresh empty maps
         userMaps = {};
         savedPositions = {};
@@ -62,7 +62,9 @@ function restoreFeatureMaps(animalKey) {
         return;
     }
 
-    // Otherwise restore deep copies
+    userMaps = {};
+    savedPositions = {};
+
     FEATURES.forEach(feature => {
         userMaps[feature] = saved[feature].map(row => [...row]);
         savedPositions[feature] = [null, null];
@@ -79,25 +81,32 @@ function switchAnimal(newAnimalKey, button) {
   HARDCODED_MAPS = ANIMALS[newAnimalKey].filters;
   FEATURES = Object.keys(HARDCODED_MAPS);
 
-  document.getElementById("feature-maps").innerHTML = "";
-  selectedFeature = FEATURES[0];
-  makeFilterButtons();
+  // 1️⃣ Restore maps BEFORE building UI
   restoreFeatureMaps(CURRENT_ANIMAL);
 
+  // 2️⃣ Build UI
+  document.getElementById("feature-maps").innerHTML = "";
+  selectedFeature = FEATURES[0];
+
+  makeFilterButtons();
+  makeFeatureMapCanvases();
+
+  // 3️⃣ Reset state
   imageRevealed = false;
   giraffeImage = null;
   cursorRow = cursorCol = null;
 
   drawMainGrid();
-  makeFeatureMapCanvases();
   drawAllFeatureMaps();
   updateHighlights();
 
+  // 4️⃣ highlight correct animal button
   if (button) {
     document.querySelectorAll(".animal-btn").forEach(b => b.classList.remove("active"));
     button.classList.add("active");
   }
 }
+
 
 
 // --- UI build ---
@@ -375,24 +384,13 @@ function init() {
   document.getElementById('guessBtn').addEventListener('click', onGuess);
 }
 
-/*
-window.addEventListener("load", () => {
-  init();
-
-document.querySelectorAll(".animal-btn").forEach(btn => {
-    btn.addEventListener("click", () => switchAnimal(btn.dataset.key));
-  });
-});
-
-document.querySelectorAll(".animal-btn").forEach(btn => btn.classList.remove("active"));
-button.classList.add("active");
-*/
 
 window.addEventListener("load", () => {
   init();
 
   const buttons = document.querySelectorAll(".animal-btn");
 
+  // Set up click handlers
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       switchAnimal(btn.dataset.key);
@@ -404,4 +402,10 @@ window.addEventListener("load", () => {
       btn.classList.add("active");
     });
   });
+
+  const defaultBtn = document.querySelector(".animal-btn[data-key='animal1']");
+  if (defaultBtn) {
+    defaultBtn.classList.add("active");
+    switchAnimal("animal1");
+  }
 });
