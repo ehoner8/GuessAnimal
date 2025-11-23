@@ -15,14 +15,19 @@ let CURRENT_ANIMAL = "animal1";
 let CORRECT_WORD = ANIMALS[CURRENT_ANIMAL].name;
 let GIRAFFE_URL = ANIMALS[CURRENT_ANIMAL].image;
 let HARDCODED_MAPS = ANIMALS[CURRENT_ANIMAL].filters;
-const FEATURES = Object.keys(HARDCODED_MAPS);
-const userMaps = {};
-const savedPositions = {}; // per-feature saved cursor positions: { feature: [r,c] }
+let FEATURES = Object.keys(HARDCODED_MAPS);
+let userMaps = {};
+let savedPositions = {}; // per-feature saved cursor positions: { feature: [r,c] }
 let selectedFeature = FEATURES[0];
 let cursorRow = null, cursorCol = null;
 let imageRevealed = false;
 let giraffeImage = null;
 let imgCanvas, imgCtx;
+
+let FEATURE_MAP_STATE = {
+    animal1: {}, 
+    animal2: {}
+};
 
 // Initialize userMaps and savedPositions
 for (const f of FEATURES) {
@@ -30,32 +35,70 @@ for (const f of FEATURES) {
   savedPositions[f] = [null, null];
 }
 
-function switchAnimal(key) {
-  CURRENT_ANIMAL = key;
+function saveCurrentFeatureMaps() {
+    const state = {};
 
-  // update globals
-  CORRECT_WORD = ANIMALS[key].name;
-  GIRAFFE_URL = ANIMALS[key].image;
-  HARDCODED_MAPS = ANIMALS[key].filters;
+    FEATURES.forEach(feature => {
+        state[feature] = userMaps[feature].map(row => [...row]); // deep copy
+    });
 
-  // reset state
+    FEATURE_MAP_STATE[CURRENT_ANIMAL] = state;
+}
+
+function restoreFeatureMaps(animalKey) {
+    const saved = FEATURE_MAP_STATE[animalKey];
+
+    if (!saved) {
+        // First time visiting this animal → make fresh empty maps
+        userMaps = {};
+        savedPositions = {};
+
+        FEATURES.forEach(feature => {
+            userMaps[feature] = Array.from({length: FM_SIZE}, () =>
+                Array(FM_SIZE).fill(null)
+            );
+            savedPositions[feature] = [null, null];
+        });
+        return;
+    }
+
+    // Otherwise restore deep copies
+    FEATURES.forEach(feature => {
+        userMaps[feature] = saved[feature].map(row => [...row]);
+        savedPositions[feature] = [null, null];
+    });
+}
+
+
+function switchAnimal(newAnimalKey, button) {
+  saveCurrentFeatureMaps();
+
+  CURRENT_ANIMAL = newAnimalKey;
+  CORRECT_WORD = ANIMALS[newAnimalKey].name;
+  GIRAFFE_URL = ANIMALS[newAnimalKey].image;
+  HARDCODED_MAPS = ANIMALS[newAnimalKey].filters;
+  FEATURES = Object.keys(HARDCODED_MAPS);
+
+  document.getElementById("feature-maps").innerHTML = "";
+  selectedFeature = FEATURES[0];
+  makeFilterButtons();
+  restoreFeatureMaps(CURRENT_ANIMAL);
+
   imageRevealed = false;
   giraffeImage = null;
-
-  for (const f of Object.keys(userMaps)) {
-    for (let r = 0; r < FM_SIZE; r++)
-      for (let c = 0; c < FM_SIZE; c++)
-        userMaps[f][r][c] = null;
-    savedPositions[f] = [null, null];
-  }
-
   cursorRow = cursorCol = null;
 
   drawMainGrid();
-  makeFeatureButtons();   // if different filters per animal
+  makeFeatureMapCanvases();
   drawAllFeatureMaps();
   updateHighlights();
+
+  if (button) {
+    document.querySelectorAll(".animal-btn").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+  }
 }
+
 
 // --- UI build ---
 function makeFilterButtons() {
@@ -332,10 +375,33 @@ function init() {
   document.getElementById('guessBtn').addEventListener('click', onGuess);
 }
 
+/*
 window.addEventListener("load", () => {
   init();
 
-  document.querySelectorAll(".animal-btn").forEach(btn => {
+document.querySelectorAll(".animal-btn").forEach(btn => {
     btn.addEventListener("click", () => switchAnimal(btn.dataset.key));
+  });
+});
+
+document.querySelectorAll(".animal-btn").forEach(btn => btn.classList.remove("active"));
+button.classList.add("active");
+*/
+
+window.addEventListener("load", () => {
+  init();
+
+  const buttons = document.querySelectorAll(".animal-btn");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      switchAnimal(btn.dataset.key);
+
+      // Remove active from all
+      buttons.forEach(b => b.classList.remove("active"));
+
+      // Add active to this button
+      btn.classList.add("active");
+    });
   });
 });
