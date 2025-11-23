@@ -3,7 +3,7 @@
 }
 
 body{
-  transform: translateX(-80px) scale(0.95);
+  transform: translateX(-80px) scale(1.0);
   transform-origin: top center;
   overflow: hidden;   /* eliminate scrollbars */
   height: 100vh;
@@ -16,6 +16,12 @@ body{
 .fm-canvas:focus,
 .filter-btn:focus {
   outline: none !important;
+}
+
+#imgCanvas {
+    width: 510px;     
+    height: 510px; 
+    image-rendering: pixelated;  
 }
 
 .container{
@@ -59,6 +65,7 @@ h1{
 
 .filter-btn{
   display:block;
+  font-size: 16px;
   width: 100%;
   margin: 6px 0;
   padding: 8px;
@@ -114,3 +121,28 @@ h1{
 #guessInput{ font-size: 14px; padding: 6px; width: 180px; }
 #guessBtn{ padding: 6px 10px; font-size: 14px; }
 #guessFeedback{ margin-top: 8px; font-size: 18px; height: 22px; }
+
+#animal-select {
+  margin-top: -10px;     /* lift it closer to the header */
+  margin-bottom: 20px;   /* spacing below */
+  display: flex;
+  gap: 20px;             /* space between Animal 1 and Animal 2 */
+  justify-content: center;
+}
+
+/* Default button styling */
+.animal-btn {
+  padding: 8px 14px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid #888;
+  background-color: #f2f2f2;
+  border-radius: 6px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Highlight the currently selected animal */
+.animal-btn.active {
+  background-color: #ffe88a;
+  border-color: #e0b400;
+}

@@ -7,7 +7,7 @@ const FILTER_SIZE = 3;
 const STRIDE = 3;
 const FM_SIZE = IMG_SIZE / STRIDE; // 10
 const CELL_SIZE = 20;              // visual size in CSS; canvas uses pixels (we'll scale)
-const SCALE = CELL_SIZE;           // one logical cell equals CELL_SIZE px
+const SCALE = 17;           // one logical cell equals CELL_SIZE px
 
 
 // Client-side data structures
