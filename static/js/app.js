@@ -29,6 +29,11 @@ let FEATURE_MAP_STATE = {
     animal2: {}
 };
 
+let ANIMAL_GUESS_STATE = {
+  animal1: { correct: false, revealed: false, guessText: "" },
+  animal2: { correct: false, revealed: false, guessText: "" }
+};
+
 // Initialize userMaps and savedPositions
 for (const f of FEATURES) {
   userMaps[f] = Array.from({length: FM_SIZE}, () => Array(FM_SIZE).fill(null));
@@ -83,6 +88,33 @@ function switchAnimal(newAnimalKey, button) {
 
   // 1️⃣ Restore maps BEFORE building UI
   restoreFeatureMaps(CURRENT_ANIMAL);
+  const input = document.getElementById("guessInput");
+  const feedback = document.getElementById("guessFeedback");
+  const state = ANIMAL_GUESS_STATE[newAnimalKey];
+  input.value = state.guessText || "";
+
+
+  if (state.correct) {
+    // show "Correct!" again
+    feedback.textContent = "Correct!";
+    feedback.style.color = "green";
+    input.value = state.guessText;
+
+    // reveal image again
+    imageRevealed = true;
+    giraffeImage = new Image();
+    giraffeImage.onload = () => drawImagePatch();
+    giraffeImage.src = GIRAFFE_URL;
+
+    } else {
+    // not solved -> clear
+    feedback.textContent = "";
+    input.value = "";  
+    imageRevealed = false;
+    drawImagePatch();
+    }
+
+
 
   // 2️⃣ Build UI
   document.getElementById("feature-maps").innerHTML = "";
@@ -92,8 +124,6 @@ function switchAnimal(newAnimalKey, button) {
   makeFeatureMapCanvases();
 
   // 3️⃣ Reset state
-  imageRevealed = false;
-  giraffeImage = null;
   cursorRow = cursorCol = null;
 
   drawMainGrid();
@@ -338,14 +368,20 @@ function onKey(e) {
 function onGuess() {
   const input = document.getElementById('guessInput');
   const feedback = document.getElementById('guessFeedback');
-  const val = (input.value || '').trim().toLowerCase();
+  const val = (input.value || "").trim().toLowerCase();
+
   if (val === CORRECT_WORD.toLowerCase()) {
-    feedback.textContent = 'Correct!';
-    feedback.style.color = 'green';
+    feedback.textContent = "Correct!";
+    feedback.style.color = "green";
+
+    ANIMAL_GUESS_STATE[CURRENT_ANIMAL].correct = true;
+    ANIMAL_GUESS_STATE[CURRENT_ANIMAL].revealed = true;
+    ANIMAL_GUESS_STATE[CURRENT_ANIMAL].guessText = val;
+
     revealImage();
   } else {
-    feedback.textContent = '❌ Incorrect!';
-    feedback.style.color = 'red';
+    feedback.textContent = "❌ Incorrect!";
+    feedback.style.color = "red";
   }
 }
 
