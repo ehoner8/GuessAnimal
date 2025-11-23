@@ -287,9 +287,11 @@ function drawImagePatch() {
   if (sr !== null && sc !== null) {
     const top = sr * STRIDE * SCALE;
     const left = sc * STRIDE * SCALE;
+    imgCtx.save();  
     imgCtx.lineWidth = 3;
     imgCtx.strokeStyle = 'yellow';
     imgCtx.strokeRect(left+2, top+2, FILTER_SIZE*SCALE-4, FILTER_SIZE*SCALE-4);
+    imgCtx.restore(); 
   }
 }
 
